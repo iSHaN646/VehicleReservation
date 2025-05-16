@@ -8,6 +8,7 @@ import in.co.avis.Vehicle_Reservation_Producer.repository.CarRepository;
 import in.co.avis.Vehicle_Reservation_Producer.repository.LocationRepository;
 import in.co.avis.Vehicle_Reservation_Producer.repository.UserRepository;
 import in.co.avis.Vehicle_Reservation_Producer.util.AESUtil;
+import in.co.avis.avro.Booking;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -21,12 +22,12 @@ import java.util.UUID;
 @Service
 public class BookingService {
 
-    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final KafkaTemplate<String, Booking> kafkaTemplate;
 
     private static final Logger logger = LoggerFactory.getLogger(BookingService.class);
     private static final String KAFKA_TOPIC = "booking-events";
 
-    public BookingService(KafkaTemplate<String, String> kafkaTemplate) {
+    public BookingService(KafkaTemplate<String, Booking> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 
@@ -41,19 +42,25 @@ public class BookingService {
         SecretKey secretKey = AESUtil.getSharedSecretKey();
         String encryptedPayload = AESUtil.encrypt(bookingDetails, secretKey);
 
+        Booking booking = Booking.newBuilder()
+                .setBookingId(bookingId.toString())
+                .setTimestamp(Instant.now().toString())
+                .setEncryptedPayload(encryptedPayload)
+                .setEventType("CREATED")
+                .build();
         // Create the EncryptedBookingMessage DTO
-        EncryptedBookingMessage encryptedBookingMessage = new EncryptedBookingMessage();
-        encryptedBookingMessage.setBookingId(bookingId);
-        encryptedBookingMessage.setTimestamp(Instant.now().toString());
-        encryptedBookingMessage.setEncryptedPayload(encryptedPayload);
-        encryptedBookingMessage.setEventType("CREATED");
+//        EncryptedBookingMessage encryptedBookingMessage = new EncryptedBookingMessage();
+//        encryptedBookingMessage.setBookingId(bookingId);
+//        encryptedBookingMessage.setTimestamp(Instant.now().toString());
+//        encryptedBookingMessage.setEncryptedPayload(encryptedPayload);
+//        encryptedBookingMessage.setEventType("CREATED");
 
-        objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-        String json = objectMapper.writeValueAsString(encryptedBookingMessage);
+//        objectMapper = new ObjectMapper();
+//        objectMapper.registerModule(new JavaTimeModule());
+//        String json = objectMapper.writeValueAsString(booking);
 
         // Publish the message to Kafka
-        kafkaTemplate.send(KAFKA_TOPIC, bookingId.toString(), json);
+        kafkaTemplate.send(KAFKA_TOPIC, bookingId.toString(), booking);
 
         // Log the booking action
         logger.info("Booking ID: {} created and sent to Kafka", bookingId);
@@ -67,19 +74,25 @@ public class BookingService {
         SecretKey secretKey = AESUtil.getSharedSecretKey();
         String encryptedPayload = AESUtil.encrypt(bookingDetails, secretKey);
 
+        Booking booking = Booking.newBuilder()
+                .setBookingId(bookingId.toString())
+                .setTimestamp(Instant.now().toString())
+                .setEncryptedPayload(encryptedPayload)
+                .setEventType("UPDATED")
+                .build();
         // Build the updated event message with eventType "UPDATED"
-        EncryptedBookingMessage encryptedBookingMessage = new EncryptedBookingMessage();
-        encryptedBookingMessage.setBookingId(bookingId);
-        encryptedBookingMessage.setTimestamp(Instant.now().toString());
-        encryptedBookingMessage.setEncryptedPayload(encryptedPayload);
-        encryptedBookingMessage.setEventType("UPDATED");
+//        EncryptedBookingMessage encryptedBookingMessage = new EncryptedBookingMessage();
+//        encryptedBookingMessage.setBookingId(bookingId);
+//        encryptedBookingMessage.setTimestamp(Instant.now().toString());
+//        encryptedBookingMessage.setEncryptedPayload(encryptedPayload);
+//        encryptedBookingMessage.setEventType("UPDATED");
 
 
-        objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-        String json = objectMapper.writeValueAsString(encryptedBookingMessage);
+//        objectMapper = new ObjectMapper();
+//        objectMapper.registerModule(new JavaTimeModule());
+//        String json = objectMapper.writeValueAsString(booking);
 
-        kafkaTemplate.send("booking-events",  bookingId.toString(), json);
+        kafkaTemplate.send("booking-events",  bookingId.toString(), booking);
 
         logger.info("Booking ID: {} updated and sent to Kafka", bookingId);
     }

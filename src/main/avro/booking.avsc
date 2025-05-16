@@ -1,0 +1,23 @@
+{
+  "type": "record",
+  "name": "Booking",
+  "namespace": "in.co.avis.avro",
+  "fields": [
+    {
+      "name": "bookingId",
+      "type": "string"
+    },
+    {
+      "name": "timestamp",
+      "type": "string"
+    },
+    {
+      "name": "encryptedPayload",
+      "type": "string"
+    },
+    {
+      "name": "eventType",
+      "type": "string"
+    }
+  ]
+}
