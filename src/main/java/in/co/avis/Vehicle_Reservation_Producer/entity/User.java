@@ -16,7 +16,16 @@ public class User {
     private int id;
 
     private String name;
+
+    @Column(name = "email", nullable = false,unique = true)
     private String email;
+
+    @Column(name = "password", nullable = false)
+    private String password;
+
+    @Column(name = "role",nullable = false)
+    private String role="USER";
+
     private String phone;
 
     public int getId() {
@@ -49,5 +58,21 @@ public class User {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }

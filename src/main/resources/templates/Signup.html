@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" content="text/html">
+    <title>Signup Page</title>
+    <link rel="stylesheet" th:href="@{/css/signup.css}" />
+</head>
+<body>
+
+<div class="signup-container">
+
+    <div class="right-panel">
+        <h1>Create your account</h1>
+
+        <form th:action="@{/adduser}" th:object="${user}" method="post">
+            <input type="hidden" th:field="*{id}" />
+            <label for="email">Email</label>
+            <input type="text" id="email" th:field="*{email}" required />
+
+            <label for="password">Password</label>
+            <input type="password" id="password" th:field="*{password}" required />
+            <small>Must contain 8+ characters, including at least 1 letter and 1 number.</small>
+
+            <button type="submit">Sign up</button>
+        </form>
+
+        <div class="footer">
+            Already have an account? <a th:href="@{/login}">Log in</a><br/>
+        </div>
+    </div>
+</div>
+</body>
+</html>

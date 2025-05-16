@@ -1,0 +1,75 @@
+*{
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+        .signup-container {
+            display: flex;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            overflow: hidden;
+            max-width: 900px;
+            width: 100%;
+            margin:auto;
+            margin-top:7rem;
+        }
+
+        .right-panel {
+            flex: 1;
+            padding: 40px;
+        }
+
+        .right-panel h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .right-panel input[type="text"],
+        .right-panel input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            box-sizing: border-box;
+        }
+
+        .right-panel button {
+            width: 100%;
+            padding: 12px;
+            background-color: #0a95ff;
+            color: white;
+            border: none;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        .right-panel .alt-signup {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .right-panel .alt-signup button {
+            background-color: white;
+            border: 1px solid #ccc;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .right-panel .alt-signup button.google {
+            border-color: #db4437;
+        }
+
+        .right-panel .alt-signup button.github {
+            border-color: #000;
+        }
+
+        .right-panel .footer {
+            font-size: 14px;
+            margin-top: 20px;
+        }
+
+        .right-panel .footer a {
+            color: #0077cc;
+            text-decoration: none;
+        }

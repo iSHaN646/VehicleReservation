@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Booking</title>
+</head>
+<body>
+  <h3 th:text="'Hi, ' + ${user.name} + ' Create a Booking'">Create a Booking</h3>
+  <h4>Available Cars</h4>
+  <div th:each="car : ${allAvailableCars}">
+    <p th:text="car.name"></p>
+  </div>
+  <br>
+  <h4>Available Locations</h4>
+  <div th:each="location : ${allLocations}">
+    <p th:text="location.name"></p>
+  </div>
+</body>
+</html>

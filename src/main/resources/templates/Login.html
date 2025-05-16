@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Login Page</title>
+  <link rel="stylesheet" th:href="@{/css/login.css}" />
+</head>
+<body>
+
+<!-- Page Content -->
+<div class="login-wrapper">
+
+  <!-- Login Form -->
+  <div class="login-box">
+    <form th:action="@{/login}" method="post">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="text" id="email" name="username" required />
+      </div>
+
+      <div class="form-group password-group">
+        <label for="password">Password</label>
+        <a th:href="@{/forgot-password}" class="forgot-password">Forgot password?</a>
+        <input type="password" id="password" name="password" required />
+      </div>
+
+      <button type="submit" class="submit-btn">Log in</button>
+
+      <!-- Spring Security Messages -->
+      <div th:if="${param.error}" class="error-msg">Invalid username or password.</div>
+      <div th:if="${param.logout}" class="logout-msg">You have been logged out.</div>
+    </form>
+  </div>
+
+  <div class="signup-link">
+    Don't have an account? <a th:href="@{/signup}">Sign up</a><br>
+  </div>
+</div>
+
+</body>
+</html>
+
