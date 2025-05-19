@@ -3,27 +3,28 @@ package in.co.avis.Vehicle_Reservation_Producer.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import in.co.avis.Vehicle_Reservation_Producer.dto.BookingRequestDto;
-import in.co.avis.Vehicle_Reservation_Producer.dto.EncryptedBookingMessage;
-import in.co.avis.Vehicle_Reservation_Producer.repository.CarRepository;
-import in.co.avis.Vehicle_Reservation_Producer.repository.LocationRepository;
-import in.co.avis.Vehicle_Reservation_Producer.repository.UserRepository;
-import in.co.avis.Vehicle_Reservation_Producer.util.AESUtil;
 import in.co.avis.avro.Booking;
-import lombok.RequiredArgsConstructor;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.stereotype.Service;
+import in.co.avis.Vehicle_Reservation_Producer.util.AESUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.crypto.SecretKey;
 import java.time.Instant;
 import java.util.UUID;
 
+/**
+ * Service class for managing car booking operations.
+ * Handles booking creation and update with encrypted payload
+ * and publishes booking events to Kafka.
+ */
 @Service
 public class BookingService {
 
     private final KafkaTemplate<String, Booking> kafkaTemplate;
-
     private static final Logger logger = LoggerFactory.getLogger(BookingService.class);
     private static final String KAFKA_TOPIC = "booking-events";
 
@@ -31,71 +32,78 @@ public class BookingService {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    public void bookCar(BookingRequestDto bookingRequestDto) throws Exception {
-        // Generate Booking ID
-        UUID bookingId = UUID.randomUUID();
+    /**
+     * Books a car by creating a new booking event.
+     * Encrypts booking details and sends to Kafka.
+     *
+     * @param bookingRequestDto Booking details DTO
+     */
+    public void bookCar(BookingRequestDto bookingRequestDto) {
+        try {
+            // Generate unique booking ID
+            UUID bookingId = UUID.randomUUID();
 
-        // Encrypt the booking details
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-        String bookingDetails = objectMapper.writeValueAsString(bookingRequestDto);
-        SecretKey secretKey = AESUtil.getSharedSecretKey();
-        String encryptedPayload = AESUtil.encrypt(bookingDetails, secretKey);
+            // Serialize booking details to JSON string
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.registerModule(new JavaTimeModule());
+            String bookingDetails = objectMapper.writeValueAsString(bookingRequestDto);
 
-        Booking booking = Booking.newBuilder()
-                .setBookingId(bookingId.toString())
-                .setTimestamp(Instant.now().toString())
-                .setEncryptedPayload(encryptedPayload)
-                .setEventType("CREATED")
-                .build();
-        // Create the EncryptedBookingMessage DTO
-//        EncryptedBookingMessage encryptedBookingMessage = new EncryptedBookingMessage();
-//        encryptedBookingMessage.setBookingId(bookingId);
-//        encryptedBookingMessage.setTimestamp(Instant.now().toString());
-//        encryptedBookingMessage.setEncryptedPayload(encryptedPayload);
-//        encryptedBookingMessage.setEventType("CREATED");
+            // Encrypt booking details
+            SecretKey secretKey = AESUtil.getSharedSecretKey();
+            String encryptedPayload = AESUtil.encrypt(bookingDetails, secretKey);
 
-//        objectMapper = new ObjectMapper();
-//        objectMapper.registerModule(new JavaTimeModule());
-//        String json = objectMapper.writeValueAsString(booking);
+            // Build booking Avro object
+            Booking booking = Booking.newBuilder()
+                    .setBookingId(bookingId.toString())
+                    .setTimestamp(Instant.now().toString())
+                    .setEncryptedPayload(encryptedPayload)
+                    .setEventType("CREATED")
+                    .build();
 
-        // Publish the message to Kafka
-        kafkaTemplate.send(KAFKA_TOPIC, bookingId.toString(), booking);
+            // Publish booking event to Kafka
+            kafkaTemplate.send(KAFKA_TOPIC, bookingId.toString(), booking);
 
-        // Log the booking action
-        logger.info("Booking ID: {} created and sent to Kafka", bookingId);
+            logger.info("Booking ID: {} created and sent to Kafka", bookingId);
+        } catch (Exception e) {
+            logger.error("Failed to create booking", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to create booking", e);
+        }
     }
 
-    public void updateBooking(UUID bookingId, BookingRequestDto dto) throws Exception {
+    /**
+     * Updates an existing booking event.
+     * Encrypts updated booking details and sends to Kafka.
+     *
+     * @param bookingId UUID of the booking to update
+     * @param dto Updated booking details DTO
+     */
+    public void updateBooking(UUID bookingId, BookingRequestDto dto) {
+        try {
+            // Serialize updated booking details to JSON string
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.registerModule(new JavaTimeModule());
+            String bookingDetails = objectMapper.writeValueAsString(dto);
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-        String bookingDetails = objectMapper.writeValueAsString(dto);
-        SecretKey secretKey = AESUtil.getSharedSecretKey();
-        String encryptedPayload = AESUtil.encrypt(bookingDetails, secretKey);
+            // Encrypt booking details
+            SecretKey secretKey = AESUtil.getSharedSecretKey();
+            String encryptedPayload = AESUtil.encrypt(bookingDetails, secretKey);
 
-        Booking booking = Booking.newBuilder()
-                .setBookingId(bookingId.toString())
-                .setTimestamp(Instant.now().toString())
-                .setEncryptedPayload(encryptedPayload)
-                .setEventType("UPDATED")
-                .build();
-        // Build the updated event message with eventType "UPDATED"
-//        EncryptedBookingMessage encryptedBookingMessage = new EncryptedBookingMessage();
-//        encryptedBookingMessage.setBookingId(bookingId);
-//        encryptedBookingMessage.setTimestamp(Instant.now().toString());
-//        encryptedBookingMessage.setEncryptedPayload(encryptedPayload);
-//        encryptedBookingMessage.setEventType("UPDATED");
+            // Build booking Avro object with event type UPDATED
+            Booking booking = Booking.newBuilder()
+                    .setBookingId(bookingId.toString())
+                    .setTimestamp(Instant.now().toString())
+                    .setEncryptedPayload(encryptedPayload)
+                    .setEventType("UPDATED")
+                    .build();
 
+            // Publish updated booking event to Kafka
+            kafkaTemplate.send(KAFKA_TOPIC, bookingId.toString(), booking);
 
-//        objectMapper = new ObjectMapper();
-//        objectMapper.registerModule(new JavaTimeModule());
-//        String json = objectMapper.writeValueAsString(booking);
-
-        kafkaTemplate.send("booking-events",  bookingId.toString(), booking);
-
-        logger.info("Booking ID: {} updated and sent to Kafka", bookingId);
+            logger.info("Booking ID: {} updated and sent to Kafka", bookingId);
+        } catch (Exception e) {
+            logger.error("Failed to update booking with ID: {}", bookingId, e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Failed to update booking with ID: " + bookingId, e);
+        }
     }
-
 }
-

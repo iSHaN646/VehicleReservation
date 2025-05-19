@@ -1,6 +1,8 @@
 package in.co.avis.Vehicle_Reservation_Producer.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
 import java.util.UUID;
 
@@ -14,10 +16,20 @@ public class Location {
     @GeneratedValue
     private int id;
 
+    @NotBlank(message = "Name is required")
     private String name;
+
+    @NotBlank(message = "Address is required")
     private String address;
+
+    @NotBlank(message = "City is required")
     private String city;
+
+    @NotBlank(message = "State is required")
     private String state;
+
+    @NotBlank(message = "ZIP code is required")
+    @Pattern(regexp = "\\d{5,6}", message = "ZIP code must be 5 or 6 digits")
     private String zip;
 
     public int getId() {

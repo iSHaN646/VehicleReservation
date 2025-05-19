@@ -1,44 +1,40 @@
 package in.co.avis.Vehicle_Reservation_Producer.controller;
 
-import in.co.avis.Vehicle_Reservation_Producer.dto.BookingRequestDto;
+import in.co.avis.Vehicle_Reservation_Producer.entity.Car;
+import in.co.avis.Vehicle_Reservation_Producer.entity.Location;
+import in.co.avis.Vehicle_Reservation_Producer.entity.User;
+import in.co.avis.Vehicle_Reservation_Producer.entity.UserInfo;
+import in.co.avis.Vehicle_Reservation_Producer.repository.CarRepository;
+import in.co.avis.Vehicle_Reservation_Producer.repository.LocationRepository;
 import in.co.avis.Vehicle_Reservation_Producer.service.BookingService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 
-import java.util.UUID;
+import java.util.List;
 
-@RestController
-@RequestMapping("/bookings")
+@Controller
 public class BookingController {
 
     private final BookingService bookingService;
+    private final CarRepository carRepository;
+    private final LocationRepository locationRepository;
 
-    public BookingController(BookingService bookingService) {
+    public BookingController(BookingService bookingService, CarRepository carRepository, LocationRepository locationRepository) {
         this.bookingService = bookingService;
+        this.carRepository = carRepository;
+        this.locationRepository = locationRepository;
     }
 
-    @PostMapping
-    public ResponseEntity<String> createBooking(@RequestBody BookingRequestDto bookingRequestDto) {
-        try {
-            bookingService.bookCar(bookingRequestDto);
-            return ResponseEntity.ok("Booking request processed and sent to Kafka");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body("Error processing booking request");
-        }
-    }
-
-    @PutMapping("/{bookingId}")
-    public ResponseEntity<String> updateBooking(@PathVariable UUID bookingId,
-                                                @RequestBody BookingRequestDto bookingRequestDto) {
-        try {
-            bookingService.updateBooking(bookingId, bookingRequestDto);
-            return ResponseEntity.ok("Booking update processed and sent to Kafka");
-        } catch (Exception e) {
-
-            return ResponseEntity.status(500).body("Error updating booking");
-        }
+    @GetMapping("/createBooking")
+    public String addBooking(@AuthenticationPrincipal UserInfo userInfo, Model model){
+        User user = userInfo.getUser();
+        List<Car> allAvailableCars = carRepository.findByStatus(Car.CarStatus.AVAILABLE);
+        List<Location> allLocations = locationRepository.findAll();
+        model.addAttribute("user",user);
+        model.addAttribute("allAvailableCars",allAvailableCars);
+        model.addAttribute("allLocations",allLocations);
+        return "Booking";
     }
 }
-

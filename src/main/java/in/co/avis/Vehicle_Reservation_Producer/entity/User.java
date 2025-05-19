@@ -1,6 +1,9 @@
 package in.co.avis.Vehicle_Reservation_Producer.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
 import java.util.UUID;
 
@@ -18,14 +21,18 @@ public class User {
     private String name;
 
     @Column(name = "email", nullable = false,unique = true)
+    @Email(message = "Invalid email format")
+    @NotBlank(message = "Email is required")
     private String email;
 
     @Column(name = "password", nullable = false)
+    @NotBlank(message = "Password is required")
     private String password;
 
     @Column(name = "role",nullable = false)
     private String role="USER";
 
+    @Pattern(regexp = "^[0-9]{10}$", message = "Phone must be 10 digits")
     private String phone;
 
     public int getId() {

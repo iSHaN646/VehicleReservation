@@ -1,6 +1,9 @@
 package in.co.avis.Vehicle_Reservation_Producer.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.*;
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -15,13 +18,20 @@ public class Car {
     @GeneratedValue
     private int id;
 
+    @NotBlank(message = "Name is required")
     private String name;
+
+    @NotBlank(message = "Model is required")
     private String model;
+
+    @NotBlank(message = "Type is required")
     private String type;
 
+    @NotNull(message = "Status is required")
     @Enumerated(EnumType.STRING)
     private CarStatus status;
 
+    @Positive(message = "Price per day must be positive")
     private BigDecimal pricePerDay;
 
     public enum CarStatus {
