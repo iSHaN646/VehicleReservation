@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Add New Location</title>
+  <link rel="stylesheet" th:href="@{/css/CarForm.css}" />
+</head>
+<body>
+<div class="container">
+  <h2 th:text="${location.id} != 0 ? 'Update Location' : 'Add New Location'">Add New Location</h2>
+  <form th:action="${location.id} != 0 ? @{/updateLocation} : @{/createLocation}"  method="post" th:object="${location}">
+    <input type="hidden" th:field="*{id}" />
+    <label>Name</label>
+    <input type="text" th:field="*{name}" placeholder="Location Name"/>
+    <div th:if="${#fields.hasErrors('name')}" class="error" th:errors="*{name}"></div>
+
+    <label>Address</label>
+    <input type="text" th:field="*{address}" placeholder="Location Address"/>
+    <div th:if="${#fields.hasErrors('address')}" class="error" th:errors="*{address}"></div>
+
+    <label>City</label>
+    <input type="text" th:field="*{city}" placeholder="Location City"/>
+    <div th:if="${#fields.hasErrors('city')}" class="error" th:errors="*{city}"></div>
+
+    <label>State</label>
+    <input type="text" th:field="*{state}" placeholder="Location State"/>
+    <div th:if="${#fields.hasErrors('state')}" class="error" th:errors="*{state}"></div>
+
+    <label>Zip</label>
+    <input type="text" th:field="*{zip}" placeholder="Location Zip"/>
+    <div th:if="${#fields.hasErrors('zip')}" class="error" th:errors="*{zip}"></div>
+
+    <button type="submit" class="btn" th:text="${location.id} != 0 ? 'Update Location' : 'Add Location'">Add Location</button>
+  </form>
+</div>
+</body>
+</html>

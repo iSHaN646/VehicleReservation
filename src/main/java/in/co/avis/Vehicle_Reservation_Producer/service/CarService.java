@@ -6,6 +6,8 @@ import in.co.avis.Vehicle_Reservation_Producer.repository.CarRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -120,4 +122,13 @@ public class CarService {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to retrieve cars by status", e);
         }
     }
+
+    public Page<Car> searchCars(String keyword, Pageable pageable) {
+        if (keyword == null || keyword.isEmpty()) {
+            return carRepository.findAll(pageable);
+        }
+        return carRepository.findByNameContainingIgnoreCaseOrModelContainingIgnoreCaseOrTypeContainingIgnoreCase(keyword, keyword, keyword, pageable);
+    }
+
+
 }

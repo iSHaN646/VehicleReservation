@@ -28,13 +28,12 @@ public class SecurityConfig {
         return http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/signup", "/css/**", "/images/**", "/favicon.ico","/adduser").permitAll()
-                        .requestMatchers("/users/**", "/locations/**", "/cars/**","/createBooking","/bookings/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                        .requestMatchers( "/login", "/signup", "/css/**", "/images/**", "/favicon.ico","/adduser").permitAll()
+                        .requestMatchers("/","/users/**", "/locations/**", "/cars/**","/createBooking","/bookings/**","/createCar","/addCar").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .httpBasic(Customizer.withDefaults()) // for Postman Basic Auth
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .formLogin(form -> form
                         .loginPage("/login")
                         .defaultSuccessUrl("/", true)

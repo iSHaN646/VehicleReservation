@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>All Users</title>
+    <link rel="stylesheet" th:href="@{/css/carList.css}" />
+</head>
+<body>
+<div class="container">
+    <h1>Available Users</h1>
+    <form th:action="@{/allUsers}" method="get" style="margin-bottom: 20px;">
+        <input type="text" name="keyword" placeholder="Search Users..." th:value="${keyword}" />
+        <button type="submit">Search</button>
+    </form>
+    <div class="card-container">
+        <div class="card" th:each="user : ${users}">
+            <div style="float:right;">
+                <a th:href="@{'/removeUser/' + ${user.id}}">Delete</a>
+            </div>
+            <h2 th:text="${user.name}">User Name</h2>
+            <p><strong>Email:</strong> <span th:text="${user.email}">Email</span></p>
+            <p><strong>Role:</strong> <span th:text="${user.role}">Role</span></p>
+            <p th:if="${user.phone!=null}"><strong>Phone:</strong> <span th:text="${user.phone}">Phone</span></p>
+        </div>
+    </div>
+    <div class="pagination" style="margin-top:4rem;">
+
+        <span th:if="${currentPage > 0}">
+        <a th:href="@{/allUsers(keyword=${keyword}, page=${currentPage - 1}, size=${size})}">Previous</a>
+    </span>
+
+        <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+        <a th:href="@{/allUsers(keyword=${keyword}, page=${i}, size=${size})}"
+           th:text="${i + 1}"
+           th:classappend="${i} == ${currentPage} ? 'active' : ''"></a>
+    </span>
+
+        <span th:if="${currentPage < totalPages - 1}">
+        <a th:href="@{/allUsers(keyword=${keyword}, page=${currentPage + 1}, size=${size})}">Next</a>
+    </span>
+    </div>
+</div>
+</body>
+</html>

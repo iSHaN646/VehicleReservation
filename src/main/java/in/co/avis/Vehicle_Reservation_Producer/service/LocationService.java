@@ -1,11 +1,14 @@
 package in.co.avis.Vehicle_Reservation_Producer.service;
 
+import in.co.avis.Vehicle_Reservation_Producer.entity.Car;
 import in.co.avis.Vehicle_Reservation_Producer.entity.Location;
 import in.co.avis.Vehicle_Reservation_Producer.exception.ResourceNotFoundException;
 import in.co.avis.Vehicle_Reservation_Producer.repository.LocationRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -109,5 +112,12 @@ public class LocationService {
             logger.error("Failed to delete location with ID {}", id, e);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to delete location", e);
         }
+    }
+
+    public Page<Location> searchLocations(String keyword, Pageable pageable) {
+        if (keyword == null || keyword.isEmpty()) {
+            return locationRepository.findAll(pageable);
+        }
+        return locationRepository.findByNameContainingIgnoreCaseOrAddressContainingIgnoreCaseOrCityContainingIgnoreCaseOrStateContainingIgnoreCaseOrZipContainingIgnoreCase(keyword, keyword, keyword,keyword,keyword, pageable);
     }
 }

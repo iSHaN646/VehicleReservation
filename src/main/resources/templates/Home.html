@@ -7,6 +7,9 @@
 <body>
 <h2 th:text="'Hi, ' + ${user.name} + ' Welcome to Vehicle Reservation'"></h2>
 <a th:href="@{/createBooking}">Create Booking</a>
+<a th:if="${user.role}=='ADMIN'" th:href="@{/allCars}">Cars</a>
+<a th:if="${user.role}=='ADMIN'" th:href="@{/allLocations}">Locations</a>
+<a th:if="${user.role}=='ADMIN'" th:href="@{/allUsers}">Users</a>
 <form th:action="@{/logout}" method="post">
     <button type="submit">Logout</button>
 </form>

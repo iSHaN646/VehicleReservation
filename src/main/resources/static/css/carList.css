@@ -1,0 +1,100 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #f9f9f9;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.card-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+.card {
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+    width: 260px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card h2 {
+    margin-top: 0;
+    color: #333;
+}
+
+.card p {
+    margin: 8px 0;
+    color: #555;
+}
+
+.pagination a {
+    padding: 5px 10px;
+    margin: 2px;
+    border: 1px solid #ccc;
+    text-decoration: none;
+    color: black;
+}
+
+.pagination a.active {
+    background-color: #007bff;
+    color: white;
+}
+/* Style the search form container */
+form[method="get"] {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+/* Style the input field */
+form[method="get"] input[type="text"] {
+    padding: 8px 12px;
+    width: 300px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+form[method="get"] input[type="text"]:focus {
+    border-color: #007bff;
+}
+
+/* Style the submit button */
+form[method="get"] button {
+    padding: 8px 16px;
+    font-size: 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+form[method="get"] button:hover {
+    background-color: #0056b3;
+}
+

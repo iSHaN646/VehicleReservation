@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Add New Car</title>
+  <link rel="stylesheet" th:href="@{/css/CarForm.css}" />
+</head>
+<body>
+<div class="container">
+  <h2 th:text="${car.id} != 0 ? 'Update Car' : 'Add New Car'">Add New Car</h2>
+  <form th:action="${car.id} != 0 ? @{/updateCar} : @{/createCar}"  method="post" th:object="${car}">
+    <input type="hidden" th:field="*{id}" />
+    <label>Name</label>
+    <input type="text" th:field="*{name}" placeholder="Car Name"/>
+    <div th:if="${#fields.hasErrors('name')}" class="error" th:errors="*{name}"></div>
+
+    <label>Model</label>
+    <input type="text" th:field="*{model}" placeholder="Car Model"/>
+    <div th:if="${#fields.hasErrors('model')}" class="error" th:errors="*{model}"></div>
+
+    <label>Type</label>
+    <input type="text" th:field="*{type}" placeholder="Car Type (e.g., SUV)"/>
+    <div th:if="${#fields.hasErrors('type')}" class="error" th:errors="*{type}"></div>
+
+    <input type="hidden" th:field="*{status}" />
+
+    <label>Price Per Day</label>
+    <input type="number" step="0.01" th:field="*{pricePerDay}" placeholder="Price per day"/>
+    <div th:if="${#fields.hasErrors('pricePerDay')}" class="error" th:errors="*{pricePerDay}"></div>
+
+    <button type="submit" class="btn" th:text="${car.id} != 0 ? 'Update Car' : 'Add Car'">Add Car</button>
+  </form>
+</div>
+</body>
+</html>

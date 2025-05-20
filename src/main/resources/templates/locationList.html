@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>All Locations</title>
+    <link rel="stylesheet" th:href="@{/css/carList.css}" />
+</head>
+<body>
+<div class="container">
+    <a th:href="@{/addLocation}">Add Location</a>
+    <h1>Available Locations</h1>
+    <form th:action="@{/allLocations}" method="get" style="margin-bottom: 20px;">
+        <input type="text" name="keyword" placeholder="Search Locations..." th:value="${keyword}" />
+        <button type="submit">Search</button>
+    </form>
+    <div class="card-container">
+        <div class="card" th:each="location : ${locations}">
+            <div style="float:right;">
+                <a th:href="@{'/modifyLocation/' + ${location.id}}">Update</a>
+                <a th:href="@{'/removeLocation/' + ${location.id}}">Delete</a>
+            </div>
+            <h2 th:text="${location.name}">Location Name</h2>
+            <p><strong>Address:</strong> <span th:text="${location.address}">Address</span></p>
+            <p><strong>City:</strong> <span th:text="${location.city}">City</span></p>
+            <p><strong>State:</strong> <span th:text="${location.state}">State</span></p>
+            <p><strong>Zip:</strong>  <span th:text="${location.zip}">00000</span></p>
+        </div>
+    </div>
+    <div class="pagination" style="margin-top:4rem;">
+
+        <span th:if="${currentPage > 0}">
+        <a th:href="@{/allLocations(keyword=${keyword}, page=${currentPage - 1}, size=${size})}">Previous</a>
+    </span>
+
+        <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+        <a th:href="@{/allLocations(keyword=${keyword}, page=${i}, size=${size})}"
+           th:text="${i + 1}"
+           th:classappend="${i} == ${currentPage} ? 'active' : ''"></a>
+    </span>
+
+        <span th:if="${currentPage < totalPages - 1}">
+        <a th:href="@{/allLocations(keyword=${keyword}, page=${currentPage + 1}, size=${size})}">Next</a>
+    </span>
+    </div>
+</div>
+</body>
+</html>

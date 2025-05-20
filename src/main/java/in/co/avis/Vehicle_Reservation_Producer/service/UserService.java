@@ -1,10 +1,13 @@
 package in.co.avis.Vehicle_Reservation_Producer.service;
 
+import in.co.avis.Vehicle_Reservation_Producer.entity.Car;
 import in.co.avis.Vehicle_Reservation_Producer.entity.User;
 import in.co.avis.Vehicle_Reservation_Producer.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -107,5 +110,12 @@ public class UserService {
             logger.error("Failed to delete user with ID {}", id, e);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to delete user", e);
         }
+    }
+
+    public Page<User> searchUsers(String keyword, Pageable pageable) {
+        if (keyword == null || keyword.isEmpty()) {
+            return userRepository.findAll(pageable);
+        }
+        return userRepository.findByNameContainingIgnoreCaseOrEmailContainingIgnoreCaseOrRoleContainingIgnoreCase(keyword, keyword, keyword, pageable);
     }
 }
