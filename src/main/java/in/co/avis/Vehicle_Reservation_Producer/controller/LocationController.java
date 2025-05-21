@@ -60,7 +60,7 @@ public class LocationController {
         model.addAttribute("keyword", keyword);
         model.addAttribute("user", user);
 
-        return "LocationList";
+        return "locationList";
     }
 
     /**
