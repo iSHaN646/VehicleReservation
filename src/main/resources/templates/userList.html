@@ -3,8 +3,12 @@
 <head>
     <title>All Users</title>
     <link rel="stylesheet" th:href="@{/css/carList.css}" />
+    <link rel="stylesheet" th:href="@{/css/Sidebar.css}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
+<div style="display:flex;">
+<div th:replace="~{fragments/Sidebar :: Sidebar(user=${user})}"></div>
 <div class="container">
     <h1>Available Users</h1>
     <form th:action="@{/allUsers}" method="get" style="margin-bottom: 20px;">
@@ -38,6 +42,7 @@
         <a th:href="@{/allUsers(keyword=${keyword}, page=${currentPage + 1}, size=${size})}">Next</a>
     </span>
     </div>
+</div>
 </div>
 </body>
 </html>

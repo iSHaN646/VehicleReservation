@@ -3,8 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Home page</title>
+    <link rel="stylesheet" th:href="@{/css/Sidebar.css}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
+<div style="display:flex;">
+<div th:replace="~{fragments/Sidebar :: Sidebar(user=${user})}"></div>
+    <div style="padding:3rem;">
 <h2 th:text="'Hi, ' + ${user.name} + ' Welcome to Vehicle Reservation'"></h2>
 <a th:href="@{/createBooking}">Create Booking</a>
 <a th:if="${user.role}=='ADMIN'" th:href="@{/allCars}">Cars</a>
@@ -13,5 +18,7 @@
 <form th:action="@{/logout}" method="post">
     <button type="submit">Logout</button>
 </form>
+    </div>
+</div>
 </body>
 </html>

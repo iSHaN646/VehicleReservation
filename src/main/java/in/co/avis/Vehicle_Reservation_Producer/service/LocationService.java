@@ -114,10 +114,24 @@ public class LocationService {
         }
     }
 
+    /**
+     * Searches for locations using a keyword across multiple fields.
+     *
+     * @param keyword  The search term to filter results.
+     * @param pageable Pageable object for pagination.
+     * @return A page of filtered location results.
+     */
     public Page<Location> searchLocations(String keyword, Pageable pageable) {
-        if (keyword == null || keyword.isEmpty()) {
-            return locationRepository.findAll(pageable);
+        try {
+            if (keyword == null || keyword.isEmpty()) {
+                logger.info("Searching all locations with pagination: {}", pageable);
+                return locationRepository.findAll(pageable);
+            }
+            return locationRepository.findByNameContainingIgnoreCaseOrAddressContainingIgnoreCaseOrCityContainingIgnoreCaseOrStateContainingIgnoreCaseOrZipContainingIgnoreCase(
+                    keyword, keyword, keyword, keyword, keyword, pageable);
+        } catch (Exception e) {
+            logger.error("Failed to search locations with keyword: {}", keyword, e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to search locations", e);
         }
-        return locationRepository.findByNameContainingIgnoreCaseOrAddressContainingIgnoreCaseOrCityContainingIgnoreCaseOrStateContainingIgnoreCaseOrZipContainingIgnoreCase(keyword, keyword, keyword,keyword,keyword, pageable);
     }
 }

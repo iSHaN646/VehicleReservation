@@ -17,6 +17,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Controller for handling car-related UI operations such as listing,
+ * adding, editing, and deleting cars.
+ */
 @Controller
 public class CarController {
 
@@ -26,17 +30,24 @@ public class CarController {
         this.carService = carService;
     }
 
+    /**
+     * Displays a paginated list of cars with optional keyword-based search.
+     *
+     * @param userInfo The authenticated user.
+     * @param keyword  Optional keyword for searching cars.
+     * @param page     The page number to display.
+     * @param size     The number of cars per page.
+     * @param model    Model to carry data to the Thymeleaf view.
+     * @return The car listing page.
+     */
     @GetMapping("/allCars")
     public String showCars(@AuthenticationPrincipal UserInfo userInfo,
                            @RequestParam(defaultValue = "") String keyword,
                            @RequestParam(defaultValue = "0") int page,
                            @RequestParam(defaultValue = "2") int size,
                            Model model) {
-        User user = userInfo.getUser();
-        if (!Objects.equals(user.getRole(), "ADMIN")) {
-            return "redirect:/login";
-        }
 
+        User user = userInfo.getUser();
         Pageable pageable = PageRequest.of(page, size);
         Page<Car> carPage = carService.searchCars(keyword, pageable);
 
@@ -45,24 +56,35 @@ public class CarController {
         model.addAttribute("size", size);
         model.addAttribute("totalPages", carPage.getTotalPages());
         model.addAttribute("keyword", keyword);
+        model.addAttribute("user", user);
 
         return "carList";
     }
 
-
-
+    /**
+     * Shows the form to add a new car.
+     * Accessible only to ADMIN users.
+     */
     @GetMapping("/addCar")
-    public String CarForm(@AuthenticationPrincipal UserInfo userInfo, Model model){
+    public String CarForm(@AuthenticationPrincipal UserInfo userInfo, Model model) {
         User user = userInfo.getUser();
-        if(!Objects.equals(user.getRole(), "ADMIN")){
-            return "redirect:/login";
+        if (!Objects.equals(user.getRole(), "ADMIN")) {
+            return "redirect:/login"; // Access denied
         }
+
         Car car = new Car();
-        car.setStatus(Car.CarStatus.AVAILABLE);
-        model.addAttribute("car",car);
+        car.setStatus(Car.CarStatus.AVAILABLE); // Default status
+        model.addAttribute("car", car);
         return "CarForm";
     }
 
+    /**
+     * Handles the submission of a new car form.
+     *
+     * @param car    The validated car object.
+     * @param result Binding result for validation errors.
+     * @return Redirects to all cars if successful, otherwise re-displays form.
+     */
     @PostMapping("/createCar")
     public String saveCar(@Valid @ModelAttribute("car") Car car, BindingResult result) {
         if (result.hasErrors()) {
@@ -72,38 +94,66 @@ public class CarController {
         return "redirect:/allCars";
     }
 
+    /**
+     * Updates an existing car's details.
+     * Only accessible by ADMIN users.
+     */
     @PostMapping("/updateCar")
-    public String updateCar(@Valid @ModelAttribute("car") Car car, BindingResult result, @AuthenticationPrincipal UserInfo userInfo) {
+    public String updateCar(@Valid @ModelAttribute("car") Car car,
+                            BindingResult result,
+                            @AuthenticationPrincipal UserInfo userInfo) {
+
         User user = userInfo.getUser();
-        if(!Objects.equals(user.getRole(), "ADMIN")){
-            return "redirect:/login";
+        if (!Objects.equals(user.getRole(), "ADMIN")) {
+            return "redirect:/login"; // Access denied
         }
+
         if (result.hasErrors()) {
             return "CarForm";
         }
+
         carService.updateCar(car);
         return "redirect:/allCars";
     }
 
+    /**
+     * Loads car details into the form for editing.
+     * Only accessible by ADMIN users.
+     *
+     * @param id Car ID to be edited.
+     */
     @GetMapping("/modifyCar/{id}")
-    public String modifyCar(@PathVariable int id, @AuthenticationPrincipal UserInfo userInfo, Model model){
+    public String modifyCar(@PathVariable int id,
+                            @AuthenticationPrincipal UserInfo userInfo,
+                            Model model) {
+
         User user = userInfo.getUser();
-        if(!Objects.equals(user.getRole(), "ADMIN")){
+        if (!Objects.equals(user.getRole(), "ADMIN")) {
             return "redirect:/login";
         }
+
         Car car = carService.getCarById(id);
-        model.addAttribute("car",car);
+        model.addAttribute("car", car);
         return "CarForm";
     }
 
+    /**
+     * Deletes a car by its ID.
+     * Only accessible by ADMIN users.
+     *
+     * @param id Car ID to delete.
+     */
     @GetMapping("/removeCar/{id}")
-    public String removeCar(@PathVariable int id, @AuthenticationPrincipal UserInfo userInfo, Model model){
+    public String removeCar(@PathVariable int id,
+                            @AuthenticationPrincipal UserInfo userInfo,
+                            Model model) {
+
         User user = userInfo.getUser();
-        if(!Objects.equals(user.getRole(), "ADMIN")){
+        if (!Objects.equals(user.getRole(), "ADMIN")) {
             return "redirect:/login";
         }
+
         carService.deleteCar(id);
         return "redirect:/allCars";
     }
-
 }

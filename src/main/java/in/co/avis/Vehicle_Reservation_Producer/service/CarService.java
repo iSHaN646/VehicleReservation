@@ -123,12 +123,27 @@ public class CarService {
         }
     }
 
+    /**
+     * Searches cars by keyword across name, model, or type, with pagination support.
+     */
     public Page<Car> searchCars(String keyword, Pageable pageable) {
-        if (keyword == null || keyword.isEmpty()) {
-            return carRepository.findAll(pageable);
+        try {
+            if (keyword == null || keyword.isEmpty()) {
+                logger.info("No keyword provided. Fetching all cars with pagination: {}", pageable);
+                return carRepository.findAll(pageable);
+            }
+
+            Page<Car> result = carRepository.findByNameContainingIgnoreCaseOrModelContainingIgnoreCaseOrTypeContainingIgnoreCase(
+                    keyword, keyword, keyword, pageable
+            );
+            logger.info("Found {} cars matching keyword '{}'", result.getTotalElements(), keyword);
+            return result;
+        } catch (Exception e) {
+            logger.error("Failed to search cars with keyword '{}'", keyword, e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to search cars", e);
         }
-        return carRepository.findByNameContainingIgnoreCaseOrModelContainingIgnoreCaseOrTypeContainingIgnoreCase(keyword, keyword, keyword, pageable);
     }
+
 
 
 }

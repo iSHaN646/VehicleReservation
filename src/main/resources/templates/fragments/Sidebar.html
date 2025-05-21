@@ -1,0 +1,29 @@
+<aside class="sidebar" th:fragment="Sidebar">
+    <ul>
+        <li class="active">
+            <a style="text-decoration:none; color:black;" th:href="@{/}"><i style="margin-right:0.3em;" class="fa-solid fa-house"></i>Home</a>
+           </li>
+        <li>
+            <a style="text-decoration:none; color:black;" th:href="@{/allCars}"><i style="margin-right:0.4em;"  class="fa-solid fa-car-side"></i>Cars</a></li>
+
+        <li> <a style="text-decoration:none; color:black;" th:href="@{/allLocations}"><i style="margin-right:0.3em;" class="fa-solid fa-location-dot"></i>Locations</a></li>
+        <li th:if="${user.role}=='ADMIN'">
+            <a style="text-decoration:none; color:black;" th:href="@{/allUsers}"><i style="margin-right:0.3em;"  class="fa-solid fa-user"></i>Users</a>
+            </li>
+        <li>
+            <a style="text-decoration:none; color:black;" th:href="@{/createBooking}"><i style="margin-right:0.3em;"  class="fa-solid fa-taxi"></i>Booking</a>
+            </li>
+
+    </ul>
+    <hr>
+<!--    <div class="collectives">-->
+<!--        <h4>Collectives</h4>-->
+<!--        <a href="/">Explore all Collectives</a>-->
+<!--    </div>-->
+
+<!--    <div class="teams">-->
+<!--        <h4>Teams</h4>-->
+<!--        <p>Ask questions, find answers and collaborate at work with Stack Overflow for Teams.</p>-->
+<!--        <button>Try Teams for free</button>-->
+<!--    </div>-->
+</aside>

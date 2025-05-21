@@ -112,10 +112,26 @@ public class UserService {
         }
     }
 
+    /**
+     * Searches for users by keyword across name, email, or role.
+     *
+     * @param keyword  The search keyword.
+     * @param pageable Pageable object for pagination.
+     * @return Page of users matching the keyword, or all users if keyword is empty.
+     */
     public Page<User> searchUsers(String keyword, Pageable pageable) {
-        if (keyword == null || keyword.isEmpty()) {
-            return userRepository.findAll(pageable);
+        try {
+            if (keyword == null || keyword.isEmpty()) {
+                logger.info("Fetching all users with pagination: {}", pageable);
+                return userRepository.findAll(pageable);
+            }
+
+            return userRepository.findByNameContainingIgnoreCaseOrEmailContainingIgnoreCaseOrRoleContainingIgnoreCase(
+                    keyword, keyword, keyword, pageable);
+        } catch (Exception e) {
+            logger.error("Error occurred while searching users with keyword: {}", keyword, e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to search users", e);
         }
-        return userRepository.findByNameContainingIgnoreCaseOrEmailContainingIgnoreCaseOrRoleContainingIgnoreCase(keyword, keyword, keyword, pageable);
     }
+
 }

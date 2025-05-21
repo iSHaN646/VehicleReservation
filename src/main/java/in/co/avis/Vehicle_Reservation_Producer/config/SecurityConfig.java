@@ -29,7 +29,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers( "/login", "/signup", "/css/**", "/images/**", "/favicon.ico","/adduser").permitAll()
-                        .requestMatchers("/","/users/**", "/locations/**", "/cars/**","/createBooking","/bookings/**","/createCar","/addCar").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                        .requestMatchers("/","/users/**", "/locations/**", "/cars/**","/createBooking","/submitBooking","/bookings/**","/createCar","/addCar").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

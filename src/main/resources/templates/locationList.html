@@ -3,10 +3,14 @@
 <head>
     <title>All Locations</title>
     <link rel="stylesheet" th:href="@{/css/carList.css}" />
+    <link rel="stylesheet" th:href="@{/css/Sidebar.css}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
+<div style="display:flex;">
+<div th:replace="~{fragments/Sidebar :: Sidebar(user=${user})}"></div>
 <div class="container">
-    <a th:href="@{/addLocation}">Add Location</a>
+    <a th:if="${user.role}=='ADMIN'" th:href="@{/addLocation}">Add Location</a>
     <h1>Available Locations</h1>
     <form th:action="@{/allLocations}" method="get" style="margin-bottom: 20px;">
         <input type="text" name="keyword" placeholder="Search Locations..." th:value="${keyword}" />
@@ -14,7 +18,7 @@
     </form>
     <div class="card-container">
         <div class="card" th:each="location : ${locations}">
-            <div style="float:right;">
+            <div th:if="${user.role}=='ADMIN'" style="float:right;">
                 <a th:href="@{'/modifyLocation/' + ${location.id}}">Update</a>
                 <a th:href="@{'/removeLocation/' + ${location.id}}">Delete</a>
             </div>
@@ -41,6 +45,7 @@
         <a th:href="@{/allLocations(keyword=${keyword}, page=${currentPage + 1}, size=${size})}">Next</a>
     </span>
     </div>
+</div>
 </div>
 </body>
 </html>

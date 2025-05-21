@@ -1,0 +1,478 @@
+
+aside.sidebar {
+    width: 250px;
+    background: #fff;
+    border-right: 1px solid var(--divider);
+    padding: 16px 0;
+    height:100vh;
+    overflow-y: auto;
+}
+
+.sidebar ul {
+    list-style: none;
+}
+
+.sidebar li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 24px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.sidebar li i {
+    width: 16px;
+    text-align: center;
+}
+
+.sidebar li.active,
+.sidebar li:hover {
+    background: var(--so-light);
+    font-weight: 600;
+}
+
+/* “Collectives” & “Teams” blocks */
+.collectives,
+.teams {
+    padding: 24px;
+    border-top: 1px solid var(--divider);
+}
+
+.collectives h4,
+.teams h4 {
+    font-size: 12px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    color: #6a737c;
+}
+
+.collectives a {
+    font-size: 13px;
+    color: #0074cc;
+    text-decoration: none;
+}
+
+.teams p {
+    font-size: 13px;
+}
+
+.teams button {
+    margin-top: 8px;
+    background: var(--so-orange);
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    padding: 6px 12px;
+    cursor: pointer;
+}
+
+/* -----------------------------------------------------------
+   Main content area
+----------------------------------------------------------- */
+.content-wrapper {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+    display: grid;
+    grid-template-columns: 1fr 280px; /* main feed + right column */
+    gap: 24px;
+}
+
+/* -----------------------------------------------------------
+   Welcome banner
+----------------------------------------------------------- */
+/* ================= GLOBAL STYLES ================= */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: "Segoe UI", Roboto, Arial, sans-serif;
+    background: #fff;
+    color: #2f3337;
+    line-height: 1.5;
+}
+
+:root {
+    --so-orange: #f48024;
+    --so-light: #f1f2f3;
+    --so-dark: #2f3337;
+    --divider: #e4e6e8;
+}
+
+/* ================= LAYOUT ================= */
+.layout {
+    display: flex;
+    height: calc(100vh - 72px);
+}
+
+.content-wrapper {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 24px;
+    padding: 24px;
+
+}
+
+@media (max-width: 960px) {
+    .content-wrapper {
+        grid-template-columns: 1fr;
+    }
+    .right-column {
+        display: none;
+    }
+}
+
+/* ================= DASHBOARD SECTION ================= */
+.dashboard {
+    grid-column: span 2;
+    margin-bottom: 24px;
+}
+
+.dashboard-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    background: #fff;
+    padding: 24px;
+    border: 1px solid var(--divider);
+    border-radius: 6px;
+    margin-bottom: 24px;
+}
+
+.welcome-icon {
+    font-size: 32px;
+    margin-right: 12px;
+}
+
+.dashboard-header h1 {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.subtitle {
+    font-size: 14px;
+    color: #6a737c;
+}
+
+.ask-btn-outline {
+    border: 1px solid #0074cc;
+    color: #0074cc;
+    background: white;
+    padding: 8px 12px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.ask-btn-outline:hover {
+    background: #f2f9ff;
+}
+
+.dashboard-cards {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.card {
+    background: #fff;
+    border: 1px solid var(--divider);
+    border-radius: 6px;
+    padding: 16px;
+    flex: 1;
+    min-width: 260px;
+    width: auto;
+}
+
+.rep-card{
+    background: #fff;
+    border: 1px solid var(--divider);
+    border-radius: 6px;
+    padding: 16px;
+    flex: 1;
+    max-width: 260px;
+}
+
+.welcome{
+    display:flex;
+}
+
+.card h3 {
+    margin-bottom: 8px;
+    font-size: 15px;
+}
+
+.rep-score {
+    font-size: 32px;
+    font-weight: 600;
+}
+
+.rep-graph {
+    background: #ebf4ff;
+    height: 8px;
+    border-radius: 4px;
+    position: relative;
+    margin: 12px 0;
+}
+
+.rep-line {
+    width: 70%;
+    height: 100%;
+    background: #1a73e8;
+    border-radius: 4px;
+}
+
+.rep-text, .italic {
+    font-size: 13px;
+    color: #6a737c;
+}
+
+.rep-text a, .rep-text a:visited {
+    color: #0074cc;
+    text-decoration: none;
+}
+
+.rep-text a:hover {
+    text-decoration: underline;
+}
+
+.badge-btn {
+    background: #6a48c9;
+    color: white;
+    padding: 8px 12px;
+    font-size: 14px;
+    border-radius: 4px;
+    display: inline-block;
+    text-decoration: none;
+    margin-top: 8px;
+}
+
+.badge-btn:hover {
+    background: #5635ab;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.gear {
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.watch-btn {
+    border: 1px solid #0074cc;
+    color: #0074cc;
+    background: #fff;
+    padding: 6px 10px;
+    font-size: 13px;
+    border-radius: 4px;
+    text-decoration: none;
+}
+
+.watch-btn:hover {
+    background: #f2f9ff;
+}
+
+/* ================= POSTS ================= */
+.post-container {
+    border-top: 1px solid #ddd;
+    padding: 16px 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+.stats {
+    text-align: center;
+    width: 80px;
+    font-size: 13px;
+    color: #6a737c;
+}
+
+.stats div {
+    margin-bottom: 4px;
+}
+
+.post-details {
+    flex: 1;
+    margin-left: 10px;
+}
+
+.post-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #0074cc;
+    text-decoration: none;
+    margin-bottom: 4px;
+    display: inline-block;
+}
+
+.post-title:hover {
+    text-decoration: underline;
+}
+
+.post-excerpt {
+    color: #3b3b3b;
+    font-size: 14px;
+    margin: 4px 0 8px;
+}
+.post-dt{
+    border:1px solid red;
+}
+.post-ex{
+}
+
+.tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.tag {
+    background-color: #e1ecf4;
+    color: #39739d;
+    padding: 4px 6px;
+    font-size: 12px;
+    border-radius: 3px;
+}
+
+.post-meta {
+    font-size: 12px;
+    color: #6a737c;
+}
+
+/* ================= RIGHT COLUMN ================= */
+.right-box h3 {
+    font-size: 15px;
+    margin-bottom: 8px;
+}
+
+.right-box ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.right-box li {
+    margin-bottom: 6px;
+    font-size: 13px;
+    color: #2f3337;
+}
+
+.right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.card.right-box {
+    padding: 16px 24px;
+}
+.truncate-two-lines {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* footer css */
+
+#custom-footer {
+             background-color: #2f3136;
+             color: #b1b1b1;
+             padding: 20px 40px;
+             font-family: Arial, sans-serif;
+             font-size: 12px;
+             position: relative;
+         }
+
+         /* Logo Styling */
+         .footer-logo {
+             position: absolute;
+             top: 20px;
+             left: 40px;
+             width: 32px; /* Stack Overflow logo ka size match karne ke liye */
+             height: 32px;
+         }
+
+         .footer-content {
+             display: flex;
+             justify-content: space-between;
+             flex-wrap: wrap;
+             margin-top: 50px; /* Logo ke neeche space ke liye */
+         }
+
+         #custom-footer a {
+             color: #b1b1b1;
+             text-decoration: none;
+         }
+
+         #custom-footer a:hover {
+             color: #ffffff;
+         }
+
+         #custom-footer h3 {
+             color: #ffffff;
+             font-size: 14px;
+             margin-bottom: 10px;
+             text-transform: uppercase;
+         }
+
+         #custom-footer ul {
+             list-style: none;
+             padding: 0;
+             margin: 0;
+         }
+
+         #custom-footer ul li {
+             margin-bottom: 8px;
+         }
+
+         .footer-section {
+             flex: 1;
+             min-width: 150px;
+             margin-bottom: 20px;
+         }
+
+         .footer-bottom {
+             width: 100%;
+             text-align: center;
+             margin-top: 20px;
+             font-size: 11px;
+             color: #777;
+         }
+
+         .footer-bottom a {
+             color: #777;
+         }
+
+         .footer-bottom a:hover {
+             color: #aaa;
+         }
+
+         @media (max-width: 768px) {
+             #custom-footer {
+                 flex-direction: column;
+             }
+
+             .footer-section {
+                 min-width: 100%;
+             }
+
+             .footer-logo {
+                 position: static;
+                 margin-bottom: 20px;
+             }
+
+             .footer-content {
+                 margin-top: 0;
+             }
+         }
