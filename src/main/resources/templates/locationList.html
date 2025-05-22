@@ -23,6 +23,7 @@
                 <a th:href="@{'/removeLocation/' + ${location.id}}">Delete</a>
             </div>
             <h2 th:text="${location.name}">Location Name</h2>
+            <img th:src="${location.imageUrl}" alt="location Image" style="max-width: 300px; margin-top: 10px;" />
             <p><strong>Address:</strong> <span th:text="${location.address}">Address</span></p>
             <p><strong>City:</strong> <span th:text="${location.city}">City</span></p>
             <p><strong>State:</strong> <span th:text="${location.state}">State</span></p>

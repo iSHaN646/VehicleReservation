@@ -1,8 +1,17 @@
 package in.co.avis.Vehicle_Reservation_Producer.controller;
 
+import in.co.avis.Vehicle_Reservation_Producer.dto.BookingRequestDto;
+import in.co.avis.Vehicle_Reservation_Producer.dto.BookingViewDTO;
+import in.co.avis.Vehicle_Reservation_Producer.dto.GetBookingDto;
+import in.co.avis.Vehicle_Reservation_Producer.entity.Car;
+import in.co.avis.Vehicle_Reservation_Producer.entity.Location;
 import in.co.avis.Vehicle_Reservation_Producer.entity.User;
 import in.co.avis.Vehicle_Reservation_Producer.entity.UserInfo;
 import in.co.avis.Vehicle_Reservation_Producer.repository.UserRepository;
+import in.co.avis.Vehicle_Reservation_Producer.service.BookingService;
+import in.co.avis.Vehicle_Reservation_Producer.service.CarService;
+import in.co.avis.Vehicle_Reservation_Producer.service.LocationService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,6 +34,15 @@ public class AuthController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private CarService carService;
+
+    @Autowired
+    private LocationService locationService;
+
+    @Autowired
+    private BookingService bookingService;
 
     /**
      * Displays the login page.
@@ -81,9 +99,43 @@ public class AuthController {
      * @return The view name for the home page.
      */
     @GetMapping("/")
-    public String Home(@AuthenticationPrincipal UserInfo userInfo, Model model) {
+    public String Home(@AuthenticationPrincipal UserInfo userInfo, Model model, HttpServletResponse response) {
+        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        response.setHeader("Pragma", "no-cache");
+        response.setDateHeader("Expires", 0);
+
         User user = userInfo.getUser();
+        System.out.println("Fetching bookings for user ID: " + user.getId());
+        List<GetBookingDto> userBookings;
+        if(user.getRole().equals("ADMIN")){
+             userBookings = bookingService.getAllBookings();
+        }else{
+             userBookings = bookingService.getBookingsByUserId(user.getId());
+        }
+      System.out.println("Bookings fetched: " + userBookings.size());
+        List<BookingViewDTO> bookingViews = userBookings.stream().map(booking -> {
+            Car car = carService.getCarById(booking.getCarId());
+            Location source = locationService.getLocationById(booking.getSourceLocationId());
+            Location destination = locationService.getLocationById(booking.getDestinationLocationId());
+
+            BookingViewDTO dto = new BookingViewDTO();
+            dto.setUserId(booking.getUserId());
+            dto.setBookingId(booking.getBookingId());
+            dto.setCarName(car.getName());
+            dto.setCarModel(car.getModel());
+            dto.setCarImageUrl(car.getImageUrl());
+            dto.setSourceLocationName(source.getName());
+            dto.setDestinationLocationName(destination.getName());
+            dto.setStartDate(booking.getStartDate());
+            dto.setEndDate(booking.getEndDate());
+
+            return dto;
+        }).toList();
+
         model.addAttribute("user", user);
+        model.addAttribute("cars", carService.getCarByStatus(Car.CarStatus.AVAILABLE));
+        model.addAttribute("locations", locationService.getAllLocations());
+        model.addAttribute("bookings", bookingViews);
         return "Home";
     }
 }

@@ -1,6 +1,7 @@
 package in.co.avis.Vehicle_Reservation_Producer.controller;
 
 import in.co.avis.Vehicle_Reservation_Producer.dto.BookingRequestDto;
+import in.co.avis.Vehicle_Reservation_Producer.dto.GetBookingDto;
 import in.co.avis.Vehicle_Reservation_Producer.entity.Car;
 import in.co.avis.Vehicle_Reservation_Producer.entity.Location;
 import in.co.avis.Vehicle_Reservation_Producer.entity.User;
@@ -13,10 +14,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.validation.BindingResult;
+import jakarta.validation.Valid;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 /**
  * Controller to handle vehicle booking requests.
@@ -55,7 +61,9 @@ public class BookingController {
         model.addAttribute("user", user);
         model.addAttribute("allAvailableCars", allAvailableCars);
         model.addAttribute("allLocations", allLocations);
-        model.addAttribute("bookingRequestDto", new BookingRequestDto());
+        BookingRequestDto bookingRequestDto = new BookingRequestDto();
+        bookingRequestDto.setUserId(user.getId());
+        model.addAttribute("bookingRequestDto",bookingRequestDto);
 
         return "Booking"; // Thymeleaf template name
     }
@@ -63,22 +71,127 @@ public class BookingController {
     /**
      * Handles the POST request when a user submits the booking form.
      * It delegates the booking logic to the BookingService.
-     *
-     * @param bookingRequestDto Booking request data submitted from the form.
-     * @param redirectAttributes Used to pass flash attributes after redirect.
-     * @return Redirects back to the booking page with a success message.
      */
     @PostMapping("/submitBooking")
-    public String submitBooking(@ModelAttribute BookingRequestDto bookingRequestDto,
-                                RedirectAttributes redirectAttributes) {
+    public String submitBooking(@Valid @ModelAttribute BookingRequestDto bookingRequestDto,
+                                BindingResult bindingResult,
+                                RedirectAttributes redirectAttributes,
+                                Model model,
+                                @AuthenticationPrincipal UserInfo userInfo) {
 
-        // Perform the booking using the service
+        // Custom logic: source != destination
+        if (bookingRequestDto.getSourceLocationId() == bookingRequestDto.getDestinationLocationId()) {
+            bindingResult.rejectValue("destinationLocationId", "error.destinationLocationId", "Destination cannot be same as source.");
+        }
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("user", userInfo.getUser());
+            model.addAttribute("allAvailableCars", carRepository.findByStatus(Car.CarStatus.AVAILABLE));
+            model.addAttribute("allLocations", locationRepository.findAll());
+            model.addAttribute("bookingRequestDto", bookingRequestDto);
+            return "Booking"; // Redisplay form with errors
+        }
+
         bookingService.bookCar(bookingRequestDto);
-
-        // Add a success message to be displayed on the redirected page
         redirectAttributes.addFlashAttribute("message", "Booking successfully submitted!");
-
         return "redirect:/createBooking";
+    }
+
+    /**
+     * Handles the GET request to modify an existing booking.
+     * It fetches the booking by ID, verifies the user's identity, and pre-populates the booking form.
+     *
+     * @param bookingId ID of the booking to be modified.
+     * @param userInfo  Authenticated user information.
+     * @param model     Spring model to pass data to the view.
+     * @return Returns the booking page pre-filled for editing, or redirects to login if unauthorized.
+     */
+    @GetMapping("/modifyBooking/{bookingId}")
+    public String modifyBooking(@PathVariable UUID bookingId, @AuthenticationPrincipal UserInfo userInfo, Model model){
+        User user = userInfo.getUser();
+        GetBookingDto booking = bookingService.getBookingsByBookingId(bookingId);
+
+        // Check if the current user is the owner of the booking or an ADMIN
+        if (!Objects.equals(user.getId(), booking.getUserId()) && !user.getRole().equals("ADMIN")) {
+            return "redirect:/login";
+        }
+
+        // Fetch available data for editing
+        List<Car> allAvailableCars = carRepository.findByStatus(Car.CarStatus.AVAILABLE);
+        List<Location> allLocations = locationRepository.findAll();
+
+        // Populate booking DTO with existing booking data
+        BookingRequestDto bookingRequestDto = new BookingRequestDto();
+        bookingRequestDto.setUserId(booking.getUserId());
+        bookingRequestDto.setCarId(booking.getCarId());
+        bookingRequestDto.setSourceLocationId(booking.getSourceLocationId());
+        bookingRequestDto.setDestinationLocationId(booking.getDestinationLocationId());
+        bookingRequestDto.setStartDate(booking.getStartDate());
+        bookingRequestDto.setEndDate(booking.getEndDate());
+
+        // Add data to model
+        model.addAttribute("bookingRequestDto", bookingRequestDto);
+        model.addAttribute("isUpdate", true);
+        model.addAttribute("bookingId", bookingId);
+        model.addAttribute("user", user);
+        model.addAttribute("allAvailableCars", allAvailableCars);
+        model.addAttribute("allLocations", allLocations);
+
+        return "Booking"; // Thymeleaf template name
+    }
+
+    /**
+     * Handles the POST request to update an existing booking.
+     * It validates the user and delegates update logic to the BookingService.
+     *
+     * @param bookingId          ID of the booking to be updated.
+     * @param dto                Updated booking data.
+     * @param userInfo           Authenticated user information.
+     * @param redirectAttributes Redirect attributes to pass messages after redirection.
+     * @return Redirects to home page on success, or login if unauthorized.
+     */
+    @PostMapping("/updateBooking/{bookingId}")
+    public String updateBooking(@PathVariable UUID bookingId,
+                                @ModelAttribute BookingRequestDto dto,
+                                @AuthenticationPrincipal UserInfo userInfo,
+                                RedirectAttributes redirectAttributes) {
+        User user = userInfo.getUser();
+
+        // Validate the user is allowed to update the booking
+        if (!Objects.equals(user.getId(), dto.getUserId()) && !user.getRole().equals("ADMIN")) {
+            return "redirect:/login";
+        }
+
+        // Perform the update via service layer
+        bookingService.updateBooking(bookingId, dto);
+        redirectAttributes.addFlashAttribute("updateSuccess", true);
+        return "redirect:/";
+    }
+
+    /**
+     * Handles the request to delete a booking by its ID.
+     * Sends a delete event to Kafka through BookingService.
+     *
+     * @param bookingId UUID of the booking to delete
+     * @param userInfo  Authenticated user
+     * @param redirectAttributes Flash attributes for UI message
+     * @return Redirects to home page or login if unauthorized
+     */
+    @GetMapping("/deleteBooking/{bookingId}")
+    public String deleteBooking(@PathVariable UUID bookingId,
+                                @AuthenticationPrincipal UserInfo userInfo,
+                                RedirectAttributes redirectAttributes) {
+        User user = userInfo.getUser();
+        GetBookingDto booking = bookingService.getBookingsByBookingId(bookingId);
+
+        // Only the booking owner or an admin can delete
+        if (!Objects.equals(user.getId(), booking.getUserId()) && !user.getRole().equals("ADMIN")) {
+            return "redirect:/login";
+        }
+
+        bookingService.deleteBooking(bookingId);
+        redirectAttributes.addFlashAttribute("message", "Booking deleted successfully.");
+        return "redirect:/";
     }
 
 }

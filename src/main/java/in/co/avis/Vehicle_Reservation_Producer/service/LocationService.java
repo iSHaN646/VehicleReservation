@@ -83,6 +83,7 @@ public class LocationService {
             location.setCity(locationDetails.getCity());
             location.setState(locationDetails.getState());
             location.setZip(locationDetails.getZip());
+            location.setImageUrl(locationDetails.getImageUrl());
             Location updated = locationRepository.save(location);
             logger.info("Location updated: {}", updated);
             return updated;

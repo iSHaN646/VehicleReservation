@@ -4,6 +4,7 @@ import in.co.avis.Vehicle_Reservation_Producer.entity.Car;
 import in.co.avis.Vehicle_Reservation_Producer.entity.User;
 import in.co.avis.Vehicle_Reservation_Producer.entity.UserInfo;
 import in.co.avis.Vehicle_Reservation_Producer.service.CarService;
+import in.co.avis.Vehicle_Reservation_Producer.service.ImageService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Objects;
@@ -25,9 +27,11 @@ import java.util.Objects;
 public class CarController {
 
     private final CarService carService;
+    private final ImageService imageService;
 
-    public CarController(CarService carService) {
+    public CarController(CarService carService, ImageService imageService) {
         this.carService = carService;
+        this.imageService = imageService;
     }
 
     /**
@@ -86,9 +90,13 @@ public class CarController {
      * @return Redirects to all cars if successful, otherwise re-displays form.
      */
     @PostMapping("/createCar")
-    public String saveCar(@Valid @ModelAttribute("car") Car car, BindingResult result) {
+    public String saveCar(@Valid @ModelAttribute("car") Car car, BindingResult result,@RequestParam("file") MultipartFile file) {
         if (result.hasErrors()) {
             return "CarForm";
+        }
+        if (!file.isEmpty()) {
+            String imageUrl = imageService.uploadFile(file);
+            car.setImageUrl(imageUrl);
         }
         carService.addCar(car);
         return "redirect:/allCars";
@@ -101,7 +109,7 @@ public class CarController {
     @PostMapping("/updateCar")
     public String updateCar(@Valid @ModelAttribute("car") Car car,
                             BindingResult result,
-                            @AuthenticationPrincipal UserInfo userInfo) {
+                            @AuthenticationPrincipal UserInfo userInfo,@RequestParam("file") MultipartFile file) {
 
         User user = userInfo.getUser();
         if (!Objects.equals(user.getRole(), "ADMIN")) {
@@ -111,7 +119,10 @@ public class CarController {
         if (result.hasErrors()) {
             return "CarForm";
         }
-
+        if (!file.isEmpty()) {
+            String imageUrl = imageService.uploadFile(file);
+            car.setImageUrl(imageUrl);
+        }
         carService.updateCar(car);
         return "redirect:/allCars";
     }

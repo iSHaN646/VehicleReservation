@@ -5,6 +5,7 @@ import in.co.avis.Vehicle_Reservation_Producer.entity.Location;
 import in.co.avis.Vehicle_Reservation_Producer.entity.User;
 import in.co.avis.Vehicle_Reservation_Producer.entity.UserInfo;
 import in.co.avis.Vehicle_Reservation_Producer.service.CarService;
+import in.co.avis.Vehicle_Reservation_Producer.service.ImageService;
 import in.co.avis.Vehicle_Reservation_Producer.service.LocationService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Objects;
@@ -27,9 +29,11 @@ import java.util.Objects;
 public class LocationController {
 
     private final LocationService locationService;
+    private final ImageService imageService;
 
-    public LocationController(LocationService locationService) {
+    public LocationController(LocationService locationService, ImageService imageService) {
         this.locationService = locationService;
+        this.imageService = imageService;
     }
 
     /**
@@ -91,11 +95,14 @@ public class LocationController {
      * @return Redirect to allLocations page on success.
      */
     @PostMapping("/createLocation")
-    public String saveLocation(@Valid @ModelAttribute("location") Location location, BindingResult result) {
+    public String saveLocation(@Valid @ModelAttribute("location") Location location, BindingResult result,@RequestParam("file") MultipartFile file) {
         if (result.hasErrors()) {
             return "LocationForm"; // Validation failed
         }
-
+        if (!file.isEmpty()) {
+            String imageUrl = imageService.uploadFile(file);
+            location.setImageUrl(imageUrl);
+        }
         locationService.createLocation(location);
         return "redirect:/allLocations";
     }
@@ -112,7 +119,8 @@ public class LocationController {
     @PostMapping("/updateLocation")
     public String updateLocation(@Valid @ModelAttribute("location") Location location,
                                  BindingResult result,
-                                 @AuthenticationPrincipal UserInfo userInfo) {
+                                 @AuthenticationPrincipal UserInfo userInfo,
+                                 @RequestParam("file") MultipartFile file) {
         User user = userInfo.getUser();
         if(!Objects.equals(user.getRole(), "ADMIN")){
             return "redirect:/login"; // Only ADMIN allowed
@@ -121,7 +129,10 @@ public class LocationController {
         if (result.hasErrors()) {
             return "LocationForm"; // Validation error
         }
-
+        if (!file.isEmpty()) {
+            String imageUrl = imageService.uploadFile(file);
+            location.setImageUrl(imageUrl);
+        }
         locationService.updateLocation(location.getId(), location);
         return "redirect:/allLocations";
     }

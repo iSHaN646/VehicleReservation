@@ -26,4 +26,16 @@
 <!--        <p>Ask questions, find answers and collaborate at work with Stack Overflow for Teams.</p>-->
 <!--        <button>Try Teams for free</button>-->
 <!--    </div>-->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          document.querySelectorAll("aside.sidebar ul li").forEach(function (li) {
+            li.addEventListener("click", function () {
+              const link = li.querySelector("a");
+              if (link) {
+                window.location = link.getAttribute("href");
+              }
+            });
+          });
+        });
+    </script>
 </aside>

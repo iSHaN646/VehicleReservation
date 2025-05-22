@@ -11,5 +11,4 @@ public class VehicleReservationProducerApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(VehicleReservationProducerApplication.class, args);
 	}
-
 }

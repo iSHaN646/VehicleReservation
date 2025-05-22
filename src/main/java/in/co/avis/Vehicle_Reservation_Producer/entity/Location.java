@@ -32,6 +32,17 @@ public class Location {
     @Pattern(regexp = "\\d{5,6}", message = "ZIP code must be 5 or 6 digits")
     private String zip;
 
+    @Column(name = "image_url")
+    private String imageUrl;
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
     public int getId() {
         return id;
     }

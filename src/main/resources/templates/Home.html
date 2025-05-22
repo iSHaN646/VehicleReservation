@@ -2,23 +2,75 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+    <meta http-equiv="Pragma" content="no-cache"/>
+    <meta http-equiv="Expires" content="0"/>
     <title>Home page</title>
     <link rel="stylesheet" th:href="@{/css/Sidebar.css}">
+    <link rel="stylesheet" th:href="@{/css/Home.css}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-<div style="display:flex;">
-<div th:replace="~{fragments/Sidebar :: Sidebar(user=${user})}"></div>
-    <div style="padding:3rem;">
-<h2 th:text="'Hi, ' + ${user.name} + ' Welcome to Vehicle Reservation'"></h2>
-<a th:href="@{/createBooking}">Create Booking</a>
-<a th:if="${user.role}=='ADMIN'" th:href="@{/allCars}">Cars</a>
-<a th:if="${user.role}=='ADMIN'" th:href="@{/allLocations}">Locations</a>
-<a th:if="${user.role}=='ADMIN'" th:href="@{/allUsers}">Users</a>
-<form th:action="@{/logout}" method="post">
-    <button type="submit">Logout</button>
-</form>
+<div style="display: flex;">
+    <div th:replace="~{fragments/Sidebar :: Sidebar(user=${user})}"></div>
+
+    <div class="main-content">
+        <h2 th:text="'Hi, ' + ${user.name} + ' — Welcome to Vehicle Reservation'"></h2>
+
+        <div style="margin-top: 2rem;">
+            <h3>Featured Cars</h3>
+            <div class="car-grid">
+                <div class="car-card" th:each="car : ${cars.size() > 4 ? cars.subList(0, 4) : cars}">
+                    <img th:src="${car.imageUrl}" alt="Car Image" />
+                    <h4 th:text="${car.name} + ' - ' + ${car.model}">Car Name</h4>
+                    <p th:text="${car.type}">Type</p>
+                    <p th:text="'$' + ${car.pricePerDay} + '/day'">Price</p>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top: 2rem;" class="locations">
+            <h3>Popular Locations</h3>
+            <div class="location-grid">
+                <div class="location-card" th:each="loc : ${locations.size() > 4 ? locations.subList(0, 4) : locations}" th:attr="data-location=${loc.name}">
+                    <img th:src="${loc.imageUrl}" alt="Location Image" />
+                    <div class="location-info">
+                        <h4 th:text="${loc.name}">Location Name</h4>
+                        <p th:text="${loc.city + ', ' + loc.state}">City, State</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${bookings != null and !#lists.isEmpty(bookings)}" style="margin-top: 2rem;">
+            <h3 th:text="(${user.role}=='ADMIN') ? 'All Bookings' : 'Your Bookings'"></h3>
+            <div class="booking-grid">
+                <div class="booking-card" th:each="booking : ${bookings}">
+                    <div th:if="(${booking.userId}==${user.id}) or (${user.role}=='ADMIN')" style="float:right;">
+                        <a th:href="@{'/modifyBooking/' + ${booking.bookingId}}">Update</a>
+                        <a th:href="@{'/deleteBooking/' + ${booking.bookingId}}">Delete</a>
+                    </div>
+                    <img th:src="${booking.carImageUrl}" alt="Car Image" style="max-width: 90%; margin-top: 10px;" />
+                    <h4 th:text="${booking.carName + ' - ' + booking.carModel}">Car Name</h4>
+                    <p th:if="${user.role}=='ADMIN'"><strong>UserId:</strong> <span th:text="${booking.userId}"></span></p>
+                    <p><strong>From:</strong> <span th:text="${booking.sourceLocationName}"></span></p>
+                    <p><strong>To:</strong> <span th:text="${booking.destinationLocationName}"></span></p>
+                    <p><strong>Start Date:</strong> <span th:text="${booking.startDate}"></span></p>
+                    <p><strong>End Date:</strong> <span th:text="${booking.endDate}"></span></p>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top: 2rem;">
+            <form th:action="@{/logout}" method="post">
+                <button type="submit">Logout</button>
+            </form>
+        </div>
     </div>
 </div>
 </body>
+<script th:if="${updateSuccess}">
+    // Force a full reload to bypass browser cache
+    window.location.reload(true);
+</script>
 </html>

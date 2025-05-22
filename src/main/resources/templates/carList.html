@@ -23,6 +23,7 @@
                 <a th:href="@{'/removeCar/' + ${car.id}}">Delete</a>
             </div>
             <h2 th:text="${car.name}">Car Name</h2>
+            <img th:src="${car.imageUrl}" alt="Car Image" style="max-width: 300px; margin-top: 10px;" />
             <p><strong>Model:</strong> <span th:text="${car.model}">Model</span></p>
             <p><strong>Type:</strong> <span th:text="${car.type}">Type</span></p>
             <p><strong>Status:</strong> <span th:text="${car.status}">Status</span></p>

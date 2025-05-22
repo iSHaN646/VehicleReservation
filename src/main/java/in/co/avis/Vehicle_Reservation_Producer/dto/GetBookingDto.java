@@ -1,40 +1,53 @@
 package in.co.avis.Vehicle_Reservation_Producer.dto;
 
-import lombok.*;
-import java.time.LocalDate;
-
-import jakarta.validation.constraints.*;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.format.annotation.DateTimeFormat;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class BookingRequestDto {
+public class GetBookingDto {
 
+    private int id;
+    private UUID bookingId;
+    private ZonedDateTime timestamp;
     private int userId;
-
-    @Min(value = 1, message = "Car must be selected")
     private int carId;
-
-    @Min(value = 1, message = "Source location must be selected")
     private int sourceLocationId;
-
-    @Min(value = 1, message = "Destination location must be selected")
     private int destinationLocationId;
-
-    @NotNull(message = "Start date is required")
-    @FutureOrPresent(message = "Start date cannot be in the past")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate startDate;
-
-    @NotNull(message = "End date is required")
-    @FutureOrPresent(message = "End date cannot be in the past")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public UUID getBookingId() {
+        return bookingId;
+    }
+
+    public void setBookingId(UUID bookingId) {
+        this.bookingId = bookingId;
+    }
+
+    public ZonedDateTime getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(ZonedDateTime timestamp) {
+        this.timestamp = timestamp;
+    }
 
     public int getUserId() {
         return userId;

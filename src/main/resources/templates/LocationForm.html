@@ -7,7 +7,7 @@
 <body>
 <div class="container">
   <h2 th:text="${location.id} != 0 ? 'Update Location' : 'Add New Location'">Add New Location</h2>
-  <form th:action="${location.id} != 0 ? @{/updateLocation} : @{/createLocation}"  method="post" th:object="${location}">
+  <form th:action="${location.id} != 0 ? @{/updateLocation} : @{/createLocation}"  method="post" th:object="${location}" enctype="multipart/form-data">
     <input type="hidden" th:field="*{id}" />
     <label>Name</label>
     <input type="text" th:field="*{name}" placeholder="Location Name"/>
@@ -29,6 +29,13 @@
     <input type="text" th:field="*{zip}" placeholder="Location Zip"/>
     <div th:if="${#fields.hasErrors('zip')}" class="error" th:errors="*{zip}"></div>
 
+    <label>Location Image</label>
+    <input type="file" name="file" required/>
+
+    <div th:if="${location.imageUrl}">
+      <p>Current Image:</p>
+      <img th:src="${location.imageUrl}" alt="location Image" style="max-width: 300px; margin-top: 10px;" />
+    </div>
     <button type="submit" class="btn" th:text="${location.id} != 0 ? 'Update Location' : 'Add Location'">Add Location</button>
   </form>
 </div>

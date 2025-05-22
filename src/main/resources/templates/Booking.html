@@ -11,6 +11,20 @@
             flashMessage.style.display = 'none';
         }
     }, 3000); // 3000ms = 3 seconds
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const cardGroups = document.querySelectorAll(".slider-container");
+
+      cardGroups.forEach(group => {
+        group.addEventListener("change", function (e) {
+          if (e.target.type === "radio") {
+            const cards = group.querySelectorAll(".card-option");
+            cards.forEach(card => card.classList.remove("selected"));
+            e.target.closest(".card-option").classList.add("selected");
+          }
+        });
+      });
+    });
   </script>
   <link rel="stylesheet" th:href="@{/css/Sidebar.css}">
   <link rel="stylesheet" th:href="@{/css/Booking.css}">
@@ -26,54 +40,109 @@
          style="margin-bottom: 20px; padding: 10px; background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; border-radius: 5px;">
       <p th:text="${message}"></p>
     </div>
-  <form th:action="@{/submitBooking}" th:object="${bookingRequestDto}" method="post">
-    <input type="hidden" th:name="userId" th:value="${user.id}" />
+    <form th:action="@{${isUpdate} ? '/updateBooking/' + ${bookingId} : '/submitBooking'}"
+          th:object="${bookingRequestDto}" method="post">
 
-    <div>
-      <label>Select Car:</label>
-      <select th:field="*{carId}" required>
-        <option value="0" disabled selected>-- Choose a car --</option>
-        <option th:each="car : ${allAvailableCars}"
-                th:value="${car.id}"
-                th:text="${car.name}">Car</option>
-      </select>
-    </div>
+      <input type="hidden" th:field="*{userId}" />
+      <input type="hidden" th:if="${isUpdate}" name="bookingId" th:value="${bookingId}" />
+      <div>
+        <label>Select Car:</label>
+        <div class="slider-container" id="car-slider">
+          <label th:each="car : ${allAvailableCars}" class="card-option">
+            <input type="radio" th:field="*{carId}" th:value="${car.id}">
+            <div class="card-content">
+              <img th:src="${car.imageUrl}" alt="Car Image" class="card-img" th:if="${car.imageUrl != null}">
+              <div class="card-title" th:text="${car.name}"></div>
+              <div>Model: <span th:text="${car.model}"></span></div>
+              <div>Type: <span th:text="${car.type}"></span></div>
+              <div>PricePerDay: $<span th:text="${car.pricePerDay}"></span></div>
+            </div>
+          </label>
+        </div>
+        <div th:if="${#fields.hasErrors('carId')}" th:errors="*{carId}" class="error"></div>
+      </div>
 
-    <div>
-      <label>Source Location:</label>
-      <select th:field="*{sourceLocationId}" required>
-        <option value="0" disabled selected>-- Choose source --</option>
-        <option th:each="loc : ${allLocations}"
-                th:value="${loc.id}"
-                th:text="${loc.name}">Source</option>
-      </select>
-    </div>
+      <div>
+        <label>Source Location:</label>
+        <div class="slider-container source-slider">
+          <label th:each="loc : ${allLocations}" class="card-option">
+            <input type="radio" th:field="*{sourceLocationId}" th:value="${loc.id}">
+            <div class="card-content">
+              <img th:src="${loc.imageUrl}" alt="location Image" class="card-img" th:if="${loc.imageUrl != null}">
+              <div class="card-title" th:text="${loc.name}"></div>
+              <div>Address: <span th:text="${loc.address}"></span></div>
+              <div>City: <span th:text="${loc.city}"></span></div>
+              <div>State: <span th:text="${loc.state}"></span></div>
+              <div th:if="${loc.zip != null}">ZIP: <span th:text="${loc.zip}"></span></div>
+            </div>
+          </label>
+        </div>
+        <div th:if="${#fields.hasErrors('sourceLocationId')}" th:errors="*{sourceLocationId}" class="error"></div>
+      </div>
 
-    <div>
-      <label>Destination Location:</label>
-      <select th:field="*{destinationLocationId}" required>
-        <option value="0" disabled selected>-- Choose destination --</option>
-        <option th:each="loc : ${allLocations}"
-                th:value="${loc.id}"
-                th:text="${loc.name}">Destination</option>
-      </select>
-    </div>
+      <div>
+        <label>Destination Location:</label>
+        <div class="slider-container source-slider">
+          <label th:each="loc : ${allLocations}" class="card-option">
+            <input type="radio" th:field="*{destinationLocationId}" th:value="${loc.id}">
+            <div class="card-content">
+              <img th:src="${loc.imageUrl}" alt="location Image" class="card-img" th:if="${loc.imageUrl != null}">
+              <div class="card-title" th:text="${loc.name}"></div>
+              <div>Address: <span th:text="${loc.address}"></span></div>
+              <div>City: <span th:text="${loc.city}"></span></div>
+              <div>State: <span th:text="${loc.state}"></span></div>
+              <div th:if="${loc.zip != null}">ZIP: <span th:text="${loc.zip}"></span></div>
+            </div>
+          </label>
+        </div>
+        <div th:if="${#fields.hasErrors('destinationLocationId')}" th:errors="*{destinationLocationId}" class="error"></div>
+      </div>
 
-    <div>
-      <label>Start Date:</label>
-      <input type="date" th:field="*{startDate}" required/>
-    </div>
+      <!-- Start Date -->
+      <div>
+        <label>Start Date:</label>
+        <input type="date" th:field="*{startDate}" required min="${T(java.time.LocalDate).now()}"/>
+        <div th:if="${#fields.hasErrors('startDate')}" th:errors="*{startDate}" class="error"></div>
+      </div>
 
-    <div>
-      <label>End Date:</label>
-      <input type="date" th:field="*{endDate}" required/>
-    </div>
+      <!-- End Date -->
+      <div>
+        <label>End Date:</label>
+        <input type="date" th:field="*{endDate}" required min="${T(java.time.LocalDate).now()}"/>
+        <div th:if="${#fields.hasErrors('endDate')}" th:errors="*{endDate}" class="error"></div>
+      </div>
 
-    <div>
-      <button type="submit">Submit Booking</button>
-    </div>
-  </form>
-</div>
+      <div>
+        <button type="submit" th:text="${isUpdate} ? 'Update Booking' : 'Submit Booking'"></button>
+      </div>
+    </form>
+  </div>
 </div>
 </body>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const cardGroups = document.querySelectorAll(".slider-container");
+
+    cardGroups.forEach(group => {
+      // Find the checked radio input inside this group
+      const checkedRadio = group.querySelector("input[type=radio]:checked");
+      if (checkedRadio) {
+        // Add 'selected' class to its parent label with class 'card-option'
+        const cardOption = checkedRadio.closest(".card-option");
+        if (cardOption) {
+          cardOption.classList.add("selected");
+        }
+      }
+
+      // Existing listener for user changes
+      group.addEventListener("change", function (e) {
+        if (e.target.type === "radio") {
+          const cards = group.querySelectorAll(".card-option");
+          cards.forEach(card => card.classList.remove("selected"));
+          e.target.closest(".card-option").classList.add("selected");
+        }
+      });
+    });
+  });
+</script>
 </html>
