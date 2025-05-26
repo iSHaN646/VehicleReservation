@@ -10,6 +10,11 @@
     <link rel="stylesheet" th:href="@{/css/Home.css}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 </head>
+    <script th:if="${updateSuccess}">
+    setTimeout(function() {
+        window.location.href = "/";
+    }, 4000);
+</script>
 <body>
 <div style="display: flex;">
     <div th:replace="~{fragments/Sidebar :: Sidebar(user=${user})}"></div>
@@ -69,8 +74,4 @@
     </div>
 </div>
 </body>
-<script th:if="${updateSuccess}">
-    // Force a full reload to bypass browser cache
-    window.location.reload(true);
-</script>
 </html>

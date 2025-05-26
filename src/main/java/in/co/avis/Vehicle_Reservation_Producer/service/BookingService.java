@@ -157,7 +157,7 @@ public class BookingService {
         try {
             logger.info("Fetching bookings for user ID: {}", userId);
             ResponseEntity<GetBookingDto[]> response = restTemplate.getForEntity(
-                    "https://vehiclereservation-consumer.onrender.com/bookings", GetBookingDto[].class);
+                    "https://vehiclereservation-consumer.onrender.com/recentBookings", GetBookingDto[].class);
 
             GetBookingDto[] allBookings = response.getBody();
             if (allBookings == null) {
@@ -192,7 +192,7 @@ public class BookingService {
         try {
             logger.info("Fetching all bookings from external consumer service");
             ResponseEntity<GetBookingDto[]> response = restTemplate.getForEntity(
-                    "https://vehiclereservation-consumer.onrender.com/bookings", GetBookingDto[].class);
+                    "https://vehiclereservation-consumer.onrender.com/recentBookings", GetBookingDto[].class);
 
             GetBookingDto[] allBookings = response.getBody();
             if (allBookings == null) {
@@ -224,7 +224,7 @@ public class BookingService {
         try {
             logger.info("Fetching booking with ID: {}", bookingId);
             ResponseEntity<GetBookingDto[]> response = restTemplate.getForEntity(
-                    "https://vehiclereservation-consumer.onrender.com/bookings", GetBookingDto[].class);
+                    "https://vehiclereservation-consumer.onrender.com/recentBookings", GetBookingDto[].class);
 
             GetBookingDto[] allBookings = response.getBody();
             if (allBookings == null) {
