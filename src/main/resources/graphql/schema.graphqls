@@ -1,0 +1,26 @@
+type Car {
+    id: Int
+    name: String
+    model: String
+    type: String
+    status: CarStatus
+    pricePerDay: Float
+    imageUrl: String
+}
+
+enum CarStatus {
+    AVAILABLE
+    BOOKED
+}
+
+type Query {
+    findAll: [Car]
+    findOne(id: Int): Car
+}
+
+type Mutation {
+    create(name:String,model:String,type:String,status:String,pricePerDay:Float): Car
+    update(id: Int,name: String,model: String,type: String,status: String,pricePerDay: Float): Car
+    delete(id: Int): Car
+}
+
