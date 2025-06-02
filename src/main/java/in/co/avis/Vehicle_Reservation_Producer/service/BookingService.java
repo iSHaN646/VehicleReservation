@@ -157,7 +157,7 @@ public class BookingService {
         try {
             logger.info("Fetching bookings for user ID: {}", userId);
             ResponseEntity<GetBookingDto[]> response = restTemplate.getForEntity(
-                    "https://vehiclereservation-consumer.onrender.com/recentBookings", GetBookingDto[].class);
+                    "https://vehiclereservation-consumer.onrender.com/recentBookings/" + userId, GetBookingDto[].class);
 
             GetBookingDto[] allBookings = response.getBody();
             if (allBookings == null) {
@@ -166,7 +166,6 @@ public class BookingService {
             }
 
             List<GetBookingDto> userBookings = Arrays.stream(allBookings)
-                    .filter(b -> b.getUserId() == userId)
                     .collect(Collectors.toList());
 
             logger.info("Found {} bookings for user ID: {}", userBookings.size(), userId);
