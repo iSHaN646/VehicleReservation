@@ -109,7 +109,7 @@ public class BookingController {
     @GetMapping("/modifyBooking/{bookingId}")
     public String modifyBooking(@PathVariable UUID bookingId, @AuthenticationPrincipal UserInfo userInfo, Model model){
         User user = userInfo.getUser();
-        GetBookingDto booking = bookingService.getBookingsByBookingId(bookingId);
+        GetBookingDto booking = bookingService.getBookingsByBookingId(bookingId,user.getId());
 
         // Check if the current user is the owner of the booking or an ADMIN
         if (!Objects.equals(user.getId(), booking.getUserId()) && !user.getRole().equals("ADMIN")) {
@@ -182,7 +182,7 @@ public class BookingController {
                                 @AuthenticationPrincipal UserInfo userInfo,
                                 RedirectAttributes redirectAttributes) {
         User user = userInfo.getUser();
-        GetBookingDto booking = bookingService.getBookingsByBookingId(bookingId);
+        GetBookingDto booking = bookingService.getBookingsByBookingId(bookingId,user.getId());
 
         // Only the booking owner or an admin can delete
         if (!Objects.equals(user.getId(), booking.getUserId()) && !user.getRole().equals("ADMIN")) {

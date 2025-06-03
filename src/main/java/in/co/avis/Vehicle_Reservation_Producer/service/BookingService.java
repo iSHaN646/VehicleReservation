@@ -214,7 +214,7 @@ public class BookingService {
      * @param bookingId UUID of the booking to be retrieved
      * @return Booking DTO if found, or a new empty DTO if not found or error occurs
      */
-    public GetBookingDto getBookingsByBookingId(UUID bookingId) {
+    public GetBookingDto getBookingsByBookingId(UUID bookingId,int userId) {
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
         factory.setConnectTimeout(5000);
         factory.setReadTimeout(30000);
@@ -223,7 +223,7 @@ public class BookingService {
         try {
             logger.info("Fetching booking with ID: {}", bookingId);
             ResponseEntity<GetBookingDto[]> response = restTemplate.getForEntity(
-                    "https://vehiclereservation-consumer.onrender.com/recentBookings", GetBookingDto[].class);
+                    "https://vehiclereservation-consumer.onrender.com/recentBookings/" + userId, GetBookingDto[].class);
 
             GetBookingDto[] allBookings = response.getBody();
             if (allBookings == null) {
